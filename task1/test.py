@@ -1,6 +1,7 @@
 import numpy as np
 
-from task1.dev import solve_system, get_angle_cond, get_spectral_cond, get_volume_cond, vary_free_coefs
+from task1.main import solve_system, get_angle_cond, get_spectral_cond, get_volume_cond, vary_free_coefs
+
 
 def print_matrix(A: np.ndarray):
     for i in range(A.shape[0]):
@@ -11,7 +12,7 @@ def print_matrix(A: np.ndarray):
     print()
 
 
-def main_loop(A: np.ndarray, b: np.ndarray, n: int):
+def main_loop(A: np.ndarray, b: np.ndarray):
     print("A = ")
     print_matrix(A)
     print("b = ", b)
@@ -30,21 +31,26 @@ def main_loop(A: np.ndarray, b: np.ndarray, n: int):
 
 def test_rotation_45_degrees():
     n = 3
-    A = np.array([[1, 0, 0], [0, np.cos(np.pi / 4), -np.sin(np.pi / 4)], [0, np.sin(np.pi / 4), np.cos(np.pi / 4)]], np.floating)
-    b = np.array([1.0, 2.0, 3.0])
-    main_loop(A, b, n)
+    A = np.array([
+        [1, 0, 0],
+        [0, np.cos(np.pi / 4), -np.sin(np.pi / 4)],
+        [0, np.sin(np.pi / 4), np.cos(np.pi / 4)]
+    ],
+        np.floating)
+    b = np.array([1, 2, 3], np.floating)
+    main_loop(A, b)
 
 
 def test_hilbert_matrix_4():
     n = 4
     A = np.array([
-        [1, 1/2, 1/3, 1/4],
-        [1/2, 1/3, 1/4, 1/5],
-        [1/3, 1/4, 1/5, 1/6],
-        [1/4, 1/5, 1/6, 1/7]
+        [1, 1 / 2, 1 / 3, 1 / 4],
+        [1 / 2, 1 / 3, 1 / 4, 1 / 5],
+        [1 / 3, 1 / 4, 1 / 5, 1 / 6],
+        [1 / 4, 1 / 5, 1 / 6, 1 / 7]
     ])
     b = np.array([1, 2, 3, 4], np.floating)
-    main_loop(A, b, n)
+    main_loop(A, b)
 
 
 def test_almost_singular_matrix():
@@ -56,7 +62,7 @@ def test_almost_singular_matrix():
         [4, 8, 12, 16.00001]
     ])
     b = np.array([1, 2, 3, 4], np.floating)
-    main_loop(A, b, n)
+    main_loop(A, b)
 
 
 def test_large_difference_matrix():
@@ -69,4 +75,4 @@ def test_large_difference_matrix():
         [1e-12, 1e-9, 1e-6, 1e-3, 5]
     ], np.floating)
     b = np.array([1, 2, 3, 4, 5], np.floating)
-    main_loop(A, b, n)
+    main_loop(A, b)

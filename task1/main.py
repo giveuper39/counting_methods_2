@@ -62,7 +62,6 @@ def main():
     print("Погрешность в решении до и после изменения b: ", abs(np.linalg.norm(x1) - np.linalg.norm(x2)))
 
 
-
 if __name__ == '__main__':
     main()
 #
