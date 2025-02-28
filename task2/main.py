@@ -75,16 +75,7 @@ def print_matrix_and_info(A: np.ndarray, name: str = "A"):
     print("Угловое число обусловленности:", get_angle_cond(A))
 
 
-def main():
-    print("СЛАУ: Ax = b")
-    n = int(input("Введите размерность матрицы A (по умолчанию, 3): n = ") or 3)
-    print("Введите матрицу A (по строкам):")
-    A = np.array([list(map(float, input().split())) for _ in range(n)])
-    print("Введите столбец b (в строку): ", end="")
-    b = np.array(list(map(float, input().split())))
-    if len(b) != n:
-        raise ValueError("Неверно введен столбец свободных членов!")
-
+def main_loop(A: np.ndarray, b: np.ndarray):
     print_matrix_and_info(A)
     x_exact = np.linalg.solve(A, b)
     print("Точное решение: ", x_exact, "\n")
@@ -102,10 +93,27 @@ def main():
     print("Решение QR-разложением: ", x_qr, "\n")
 
     b_new = vary_free_coefs(b)
+    print("b:", b_new)
     x_exact_new = np.linalg.solve(A, b_new)
     x_lu_new = lu_solve(L, U, b_new)
     x_qr_new = qr_solve(Q, R, b_new)
-    print(x_exact_new, "\n", x_lu_new, "\n", x_qr_new)
+    print(f"Решения:\n{x_exact_new}\n{x_lu_new}\n{x_qr_new}")
+    print("Точная погрешность после варьирования b: ", abs(np.linalg.norm(x_exact) - np.linalg.norm(x_exact_new)))
+    print("LU погрешность: ", abs(np.linalg.norm(x_lu) - np.linalg.norm(x_lu_new)))
+    print("QR погрешность: ", abs(np.linalg.norm(x_qr) - np.linalg.norm(x_qr_new)))
+
+
+def main():
+    print("СЛАУ: Ax = b")
+    n = int(input("Введите размерность матрицы A (по умолчанию, 3): n = ") or 3)
+    print("Введите матрицу A (по строкам):")
+    A = np.array([list(map(float, input().split())) for _ in range(n)])
+    print("Введите столбец b (в строку): ", end="")
+    b = np.array(list(map(float, input().split())))
+    if len(b) != n:
+        raise ValueError("Неверно введен столбец свободных членов!")
+
+    main_loop(A, b)
 
 
 if __name__ == '__main__':

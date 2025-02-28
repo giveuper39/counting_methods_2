@@ -30,7 +30,6 @@ def main_loop(A: np.ndarray, b: np.ndarray):
 
 
 def test_rotation_45_degrees():
-    n = 3
     A = np.array([
         [1, 0, 0],
         [0, np.cos(np.pi / 4), -np.sin(np.pi / 4)],
@@ -73,6 +72,18 @@ def test_large_difference_matrix():
         [1e-6, 1e-3, 3, 1e3, 1e6],
         [1e-9, 1e-6, 1e-3, 4, 1e3],
         [1e-12, 1e-9, 1e-6, 1e-3, 5]
+    ], np.floating)
+    b = np.array([1, 2, 3, 4, 5], np.floating)
+    main_loop(A, b)
+
+
+def test_tridiagonal_matrix():
+    A = np.array([
+        [4, 1, 0, 0, 0],
+        [1, 4, 1, 0, 0],
+        [0, 1, 4, 1, 0],
+        [0, 0, 1, 4, 1],
+        [0, 0, 0, 1, 4]
     ], np.floating)
     b = np.array([1, 2, 3, 4, 5], np.floating)
     main_loop(A, b)
