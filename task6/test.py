@@ -1,55 +1,89 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-from lib import * 
-
-def test_variable_coeffs():
-    a, b = 0, 1
-    alpha, beta = 1, np.exp(-1)
-    N = 30
-
-    def p(x): return x
-    def q(x): return 1
-    def f(x): return np.exp(-x)
-
-    x, u = solve(a, b, alpha, beta, N, p, q, f)
-    exact = np.exp(-x)
-
-    plt.figure(figsize=(10, 5))
-    plt.plot(x, u, 'o-', label='Численное решение')
-    plt.plot(x, exact, 'r-', label='Точное решение ($e^{-x}$)')
-    plt.xlabel('x')
-    plt.ylabel('u(x)')
-    plt.legend()
-    plt.grid()
-    plt.show()
-
-    error = np.max(np.abs(u - exact))
-    print(f"Ошибка: {error:.2e}")
+from task6.main import main_loop, Equation
 
 
-def test_neodnorodnoe():
-    a, b = 0, np.pi / 2
-    alpha, beta = 0, np.pi
-    N = 20
+class Equation1(Equation):
+    """ Уравнение: -u''(x) = pi^2 * sin(pi*x)
+        Граничные условия:
+            u(0) = 0
+            u(1) = 0
+        Истинное решение: u(x) = sin(pi*x)
+    """
 
-    def p(x): return 0
-    def q(x): return 1
-    def f(x): return -np.sin(x)
+    def u_true(self, x):
+        return np.sin(np.pi * x)
 
-    x, u = solve(a, b, alpha, beta, N, p, q, f)
-    exact = np.pi * np.sin(x) + x / 2 * np.cos(x)
+    def f(self, x):
+        return np.pi ** 2 * np.sin(np.pi * x)
 
-    plt.figure(figsize=(10, 5))
-    plt.plot(x, u, 'o-', label='Численное решение')
-    plt.plot(x, exact, 'r-', label='Точное решение')
-    plt.xlabel('x')
-    plt.ylabel('u(x)')
-    plt.legend()
-    plt.grid()
-    plt.show()
+    def finite_difference(self, N):
+        h = 1.0 / N
+        x = np.linspace(0, 1, N + 1)
+        A = np.zeros((N - 1, N - 1))
+        b = np.zeros(N - 1)
 
-    error = np.max(np.abs(u - exact))
-    print(f"Ошибка: {error:.2e}")
+        for i in range(N - 1):
+            A[i, i] = 2
+            if i > 0:
+                A[i, i - 1] = -1
+            if i < N - 2:
+                A[i, i + 1] = -1
+            b[i] = h ** 2 * self.f(x[i + 1])
 
-test_neodnorodnoe()
+        u_inner = np.linalg.solve(A, b)
+        u_full = np.zeros(N + 1)
+        u_full[1:N] = u_inner
+        return x, u_full
+
+
+class Equation2(Equation):
+    """ Уравнение: -u''(x) = 2
+        Граничные условия:
+            u'(0) = 1 (Неймана слева),
+            u(1) = 1 (Дирихле справа)
+        Истинное решение: u(x) = -x² + x + 1
+    """
+
+    def u_true(self, x):
+        return -x ** 2 + x + 1
+
+    def f(self, x):
+        return 2
+
+    def finite_difference(self, N):
+        h = 1.0 / N
+        x = np.linspace(0, 1, N + 1)
+        A = np.zeros((N + 1, N + 1))
+        b = np.zeros(N + 1)
+
+        for i in range(1, N):
+            A[i, i - 1] = 1
+            A[i, i] = -2
+            A[i, i + 1] = 1
+            b[i] = -h ** 2 * self.f(x[i])
+
+        A[0, 0] = -1
+        A[0, 1] = 1
+        b[0] = h
+
+        A[N, N] = 1
+        b[N] = 1
+
+        u = np.linalg.solve(A, b)
+        return x, u
+
+
+N_values = [10, 20, 40, 80, 160, 320, 640]
+
+
+def test1():
+    print("\nЗадача 1: Дирихле")
+    eq1 = Equation1()
+    main_loop(eq1, N_values, num_draw=40)
+
+
+def test2():
+    print("\nЗадача 2: Смешанные условия")
+    eq2 = Equation2()
+    main_loop(eq2, N_values, num_draw=60)
