@@ -101,9 +101,6 @@ def solve_ritz(graphic_boundaries, p, q, f, n=15):
 def exact_solution_plot(graphic_boundaries, n, exact_solution):
     x_plot = np.linspace(graphic_boundaries[0], graphic_boundaries[1], 200)
     y_plot = np.zeros_like(x_plot)
-    print(exact_solution(0))
-    print(exact_solution(-1))
-    print(exact_solution(1))
     y_plot += exact_solution(x_plot)
     return x_plot, y_plot
 
